@@ -82,9 +82,9 @@ action_class do
   # we have to do this since apache doesn't have a sha256 like chef expects
   def fetch_checksum
     uri = if new_resource.tarball_uri.nil?
-            URI.join(new_resource.checksum_base_path, "#{new_resource.version}/apache-activemq-#{new_resource.version}-bin.tar.gz.sha1")
+            URI.join(new_resource.checksum_base_path, "#{new_resource.version}/apache-activemq-#{new_resource.version}-bin.tar.gz.sha512")
           else
-            URI("#{new_resource.tarball_uri}.sha1")
+            URI("#{new_resource.tarball_uri}.sha512")
           end
     request = Net::HTTP.new(uri.host, uri.port)
     response = request.get(uri)
@@ -107,7 +107,7 @@ action_class do
   # return true if they match. Append .bad to the cached copy to prevent using it next time
   def validate_checksum(file_to_check)
     desired = fetch_checksum
-    actual = Digest::SHA1.hexdigest(::File.read(file_to_check))
+    actual = Digest::SHA512.hexdigest(::File.read(file_to_check))
 
     if desired == actual
       true
